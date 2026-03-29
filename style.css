@@ -163,6 +163,14 @@ button:hover {
   border-radius: 4px;
   border: 1.5px solid #0b3d91;
   background: #fff;
+  /* Smooth transition for scaling effect */
+  transition: transform 0.35s cubic-bezier(0.4, 0.2, 0.2, 1), box-shadow 0.3s;
+}
+
+/* Scale up the image smoothly on hover */
+.gallery-item:hover img {
+  transform: scale(1.08);
+  box-shadow: 0 8px 32px rgba(252,61,33,0.18);
 }
 
 .gallery-item p {
