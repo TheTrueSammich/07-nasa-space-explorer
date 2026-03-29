@@ -63,20 +63,16 @@ function createGalleryItem(item) {
 
 		       let mediaElement;
 		       let expandBtn = null;
-			       if (item.media_type === 'image') {
-				       // Create the image element
-				       mediaElement = document.createElement('img');
-				       mediaElement.src = item.url;
-				       mediaElement.alt = item.title;
-				       mediaElement.style.cursor = 'pointer';
-				       // Make the whole gallery box clickable for images
-				       div.style.cursor = 'pointer';
-				       div.addEventListener('click', (e) => {
-					       // Only trigger if not clicking on a button (like Expand)
-					       if (e.target.tagName !== 'BUTTON') {
-						       showModal(item);
-					       }
-				       });
+		       if (item.media_type === 'image') {
+			       // Create the image element
+			       mediaElement = document.createElement('img');
+			       mediaElement.src = item.url;
+			       mediaElement.alt = item.title;
+			       mediaElement.style.cursor = 'pointer';
+			       // Add click event to show modal
+			       mediaElement.addEventListener('click', () => {
+				       showModal(item);
+			       });
 		       } else if (item.media_type === 'video') {
 			       // Try to embed YouTube videos, otherwise embed video if possible
 				   if (item.url.includes('youtube.com') || item.url.includes('youtu.be')) {
@@ -311,10 +307,6 @@ function showModal(item) {
 	desc.style.textAlign = 'center';
 	desc.style.color = '#3f8efc'; // Lighter NASA blue
 	desc.style.fontWeight = 'bold';
-	desc.style.maxWidth = '340px';
-	desc.style.marginLeft = 'auto';
-	desc.style.marginRight = 'auto';
-	desc.style.wordBreak = 'break-word';
 
 	// Close button
 	const closeBtn = document.createElement('button');
