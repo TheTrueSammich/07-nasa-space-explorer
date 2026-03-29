@@ -2,7 +2,8 @@
   background: linear-gradient(135deg, #0b3d91 0%, #1a237e 60%, #6a1b9a 100%);
   padding: 20px;
   border-radius: 10px;
-  max-width: 90vw;
+  max-width: 480px;
+  width: 92vw;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 4px 16px rgba(11,61,145,0.18);

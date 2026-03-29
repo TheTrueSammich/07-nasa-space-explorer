@@ -1,3 +1,25 @@
+// Fun space facts array
+const spaceFacts = [
+	"Did you know? One million Earths could fit inside the Sun!",
+	"Did you know? Venus spins backwards compared to most planets!",
+	"Did you know? A day on Mercury is longer than its year!",
+	"Did you know? Neutron stars can spin 600 times per second!",
+	"Did you know? The footprints on the Moon will be there for millions of years.",
+	"Did you know? Jupiter has 95 known moons!",
+	"Did you know? The largest volcano in the solar system is on Mars (Olympus Mons).",
+	"Did you know? Saturn could float in water because it’s mostly gas!",
+	"Did you know? The Milky Way galaxy will collide with Andromeda in about 4 billion years.",
+	"Did you know? There are more trees on Earth than stars in the Milky Way!"
+];
+
+// Show a random fact on page load
+window.addEventListener('DOMContentLoaded', () => {
+	const factBox = document.getElementById('didYouKnow');
+	if (factBox) {
+		const randomFact = spaceFacts[Math.floor(Math.random() * spaceFacts.length)];
+		factBox.textContent = randomFact;
+	}
+});
 // Find our date picker inputs on the page
 const startInput = document.getElementById('startDate');
 const endInput = document.getElementById('endDate');
@@ -41,16 +63,20 @@ function createGalleryItem(item) {
 
 		       let mediaElement;
 		       let expandBtn = null;
-		       if (item.media_type === 'image') {
-			       // Create the image element
-			       mediaElement = document.createElement('img');
-			       mediaElement.src = item.url;
-			       mediaElement.alt = item.title;
-			       mediaElement.style.cursor = 'pointer';
-			       // Add click event to show modal
-			       mediaElement.addEventListener('click', () => {
-				       showModal(item);
-			       });
+			       if (item.media_type === 'image') {
+				       // Create the image element
+				       mediaElement = document.createElement('img');
+				       mediaElement.src = item.url;
+				       mediaElement.alt = item.title;
+				       mediaElement.style.cursor = 'pointer';
+				       // Make the whole gallery box clickable for images
+				       div.style.cursor = 'pointer';
+				       div.addEventListener('click', (e) => {
+					       // Only trigger if not clicking on a button (like Expand)
+					       if (e.target.tagName !== 'BUTTON') {
+						       showModal(item);
+					       }
+				       });
 		       } else if (item.media_type === 'video') {
 			       // Try to embed YouTube videos, otherwise embed video if possible
 				   if (item.url.includes('youtube.com') || item.url.includes('youtu.be')) {
@@ -285,6 +311,10 @@ function showModal(item) {
 	desc.style.textAlign = 'center';
 	desc.style.color = '#3f8efc'; // Lighter NASA blue
 	desc.style.fontWeight = 'bold';
+	desc.style.maxWidth = '340px';
+	desc.style.marginLeft = 'auto';
+	desc.style.marginRight = 'auto';
+	desc.style.wordBreak = 'break-word';
 
 	// Close button
 	const closeBtn = document.createElement('button');
