@@ -32,32 +32,139 @@ function clearGallery() {
 
 // Function to create a gallery item
 function createGalleryItem(item) {
-	// Only show images (not videos)
-	if (item.media_type !== 'image') return null;
+	       // Only show images and videos
+	       if (item.media_type !== 'image' && item.media_type !== 'video') return null;
 
-	// Create the gallery item div
-	const div = document.createElement('div');
-	div.className = 'gallery-item';
+	       // Create the gallery item div
+	       const div = document.createElement('div');
+	       div.className = 'gallery-item';
 
-	// Create the image element
-	const img = document.createElement('img');
-	img.src = item.url;
-	img.alt = item.title;
-	img.style.cursor = 'pointer';
+		       let mediaElement;
+		       let expandBtn = null;
+		       if (item.media_type === 'image') {
+			       // Create the image element
+			       mediaElement = document.createElement('img');
+			       mediaElement.src = item.url;
+			       mediaElement.alt = item.title;
+			       mediaElement.style.cursor = 'pointer';
+			       // Add click event to show modal
+			       mediaElement.addEventListener('click', () => {
+				       showModal(item);
+			       });
+		       } else if (item.media_type === 'video') {
+			       // Try to embed YouTube videos, otherwise embed video if possible
+				   if (item.url.includes('youtube.com') || item.url.includes('youtu.be')) {
+				       // Extract YouTube video ID
+				       let videoId = '';
+					const ytMatch = item.url.match(/(?:youtube\.com\/.*v=|youtu\.be\/)([\w-]+)/);
+				       if (ytMatch && ytMatch[1]) {
+					       videoId = ytMatch[1];
+				       }
+					       if (videoId) {
+						       mediaElement = document.createElement('iframe');
+						       mediaElement.src = `https://www.youtube.com/embed/${videoId}`;
+						       mediaElement.width = '100%';
+						       mediaElement.height = '200';
+						       mediaElement.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+						       mediaElement.allowFullscreen = true;
+						       mediaElement.style.borderRadius = '4px';
+						       mediaElement.style.background = '#000';
+						       // Add expand button for modal
+						       expandBtn = document.createElement('button');
+						       expandBtn.textContent = 'Expand';
+						       expandBtn.style.margin = '10px auto 0 auto';
+						       expandBtn.style.display = 'block';
+						       expandBtn.style.background = '#0b3d91';
+						       expandBtn.style.color = '#fff';
+						       expandBtn.style.fontWeight = 'bold';
+						       expandBtn.style.border = 'none';
+						       expandBtn.style.borderRadius = '4px';
+						       expandBtn.style.padding = '7px 18px';
+						       expandBtn.style.cursor = 'pointer';
+						       expandBtn.addEventListener('click', () => {
+							       showModal(item);
+						       });
+					       } else {
+					       // Fallback to link if ID not found
+					       mediaElement = document.createElement('a');
+					       mediaElement.href = item.url;
+					       mediaElement.textContent = 'Watch Video';
+					       mediaElement.target = '_blank';
+					       mediaElement.style.display = 'block';
+					       mediaElement.style.color = '#0b3d91';
+					       mediaElement.style.fontWeight = 'bold';
+					       mediaElement.style.margin = '20px 0';
+				       }
+				       } else if (item.url.match(/\.(mp4|webm|ogg)(\?|$)/i)) {
+					       // Embed direct video files (mp4, webm, ogg)
+					       mediaElement = document.createElement('video');
+					       mediaElement.src = item.url;
+					       mediaElement.controls = true;
+					       mediaElement.width = 100;
+					       mediaElement.style.width = '100%';
+					       mediaElement.style.height = '200px';
+					       mediaElement.style.borderRadius = '4px';
+					       mediaElement.style.background = '#000';
+					       // Add expand button for modal
+					       expandBtn = document.createElement('button');
+					       expandBtn.textContent = 'Expand';
+					       expandBtn.style.margin = '10px auto 0 auto';
+					       expandBtn.style.display = 'block';
+					       expandBtn.style.background = '#0b3d91';
+					       expandBtn.style.color = '#fff';
+					       expandBtn.style.fontWeight = 'bold';
+					       expandBtn.style.border = 'none';
+					       expandBtn.style.borderRadius = '4px';
+					       expandBtn.style.padding = '7px 18px';
+					       expandBtn.style.cursor = 'pointer';
+					       expandBtn.addEventListener('click', () => {
+						       showModal(item);
+					       });
+			       } else {
+				       // Not embeddable, just provide a link
+				       mediaElement = document.createElement('a');
+				       mediaElement.href = item.url;
+				       mediaElement.textContent = 'Watch Video';
+				       mediaElement.target = '_blank';
+				       mediaElement.style.display = 'block';
+				       mediaElement.style.color = '#0b3d91';
+				       mediaElement.style.fontWeight = 'bold';
+				       mediaElement.style.margin = '20px 0';
+			       }
+	       }
 
-	// Add click event to show modal
-	img.addEventListener('click', () => {
-		showModal(item);
-	});
+	       // Add a flex container for title and date on the same line
+	       const titleDateRow = document.createElement('div');
+	       titleDateRow.style.display = 'flex';
+	       titleDateRow.style.justifyContent = 'space-between';
+	       titleDateRow.style.alignItems = 'center';
+	       titleDateRow.style.marginTop = '10px';
 
-	// Add a simple title below the image
-	const title = document.createElement('p');
-	title.textContent = item.title;
-	title.style.fontWeight = 'bold';
+	       const title = document.createElement('span');
+	       title.textContent = item.title;
+	       title.style.fontWeight = 'bold';
+	       title.style.fontSize = '15px';
+	       title.style.color = '#0b3d91';
+	       title.style.flex = '1';
+	       title.style.overflow = 'hidden';
+	       title.style.textOverflow = 'ellipsis';
+	       title.style.whiteSpace = 'nowrap';
 
-	div.appendChild(img);
-	div.appendChild(title);
-	return div;
+	       const date = document.createElement('span');
+	       date.textContent = item.date;
+	       date.style.fontSize = '15px';
+	       date.style.color = '#0b3d91';
+	       date.style.marginLeft = '12px';
+	       date.style.flexShrink = '0';
+	       date.style.fontWeight = 'bold';
+
+	       titleDateRow.appendChild(title);
+	       titleDateRow.appendChild(date);
+
+		div.appendChild(mediaElement);
+		div.appendChild(titleDateRow);
+		if (expandBtn) div.appendChild(expandBtn);
+		return div;
 }
 
 // Function to display images in the gallery
@@ -102,13 +209,65 @@ function showModal(item) {
 	modal.style.boxShadow = '0 4px 16px rgba(0,0,0,0.2)';
 	modal.style.textAlign = 'center';
 
-	// Image
-	const img = document.createElement('img');
-	img.src = item.hdurl || item.url;
-	img.alt = item.title;
-	img.style.maxWidth = '100%';
-	img.style.maxHeight = '400px';
-	img.style.borderRadius = '6px';
+
+	       let mediaElement;
+	       if (item.media_type === 'image') {
+		       // Image
+		       mediaElement = document.createElement('img');
+		       mediaElement.src = item.hdurl || item.url;
+		       mediaElement.alt = item.title;
+		       mediaElement.style.maxWidth = '100%';
+		       mediaElement.style.maxHeight = '400px';
+		       mediaElement.style.borderRadius = '6px';
+	       } else if (item.media_type === 'video') {
+		       if (item.url.includes('youtube.com') || item.url.includes('youtu.be')) {
+			       // Extract YouTube video ID
+			       let videoId = '';
+			       const ytMatch = item.url.match(/(?:youtube\.com\/.*v=|youtu\.be\/)([\w-]+)/);
+			       if (ytMatch && ytMatch[1]) {
+				       videoId = ytMatch[1];
+			       }
+			       if (videoId) {
+				       mediaElement = document.createElement('iframe');
+				       mediaElement.src = `https://www.youtube.com/embed/${videoId}`;
+				       mediaElement.width = '100%';
+				       mediaElement.height = '400';
+				       mediaElement.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+				       mediaElement.allowFullscreen = true;
+				       mediaElement.style.borderRadius = '6px';
+				       mediaElement.style.background = '#000';
+			       } else {
+				       // Fallback to link if ID not found
+				       mediaElement = document.createElement('a');
+				       mediaElement.href = item.url;
+				       mediaElement.textContent = 'Watch Video';
+				       mediaElement.target = '_blank';
+				       mediaElement.style.display = 'block';
+				       mediaElement.style.color = '#0b3d91';
+				       mediaElement.style.fontWeight = 'bold';
+				       mediaElement.style.margin = '20px 0';
+			       }
+		       } else if (item.url.match(/\.(mp4|webm|ogg)(\?|$)/i)) {
+			       // Embed direct video files (mp4, webm, ogg)
+			       mediaElement = document.createElement('video');
+			       mediaElement.src = item.url;
+			       mediaElement.controls = true;
+			       mediaElement.style.width = '100%';
+			       mediaElement.style.maxHeight = '400px';
+			       mediaElement.style.borderRadius = '6px';
+			       mediaElement.style.background = '#000';
+		       } else {
+			       // Not embeddable, just provide a link
+			       mediaElement = document.createElement('a');
+			       mediaElement.href = item.url;
+			       mediaElement.textContent = 'Watch Video';
+			       mediaElement.target = '_blank';
+			       mediaElement.style.display = 'block';
+			       mediaElement.style.color = '#0b3d91';
+			       mediaElement.style.fontWeight = 'bold';
+			       mediaElement.style.margin = '20px 0';
+		       }
+	       }
 
 
 	// Title and date
@@ -140,7 +299,7 @@ function showModal(item) {
 		document.body.removeChild(modalBg);
 	});
 
-	modal.appendChild(img);
+	if (mediaElement) modal.appendChild(mediaElement);
 	modal.appendChild(title);
 	modal.appendChild(desc);
 	modal.appendChild(closeBtn);
