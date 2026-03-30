@@ -61,19 +61,16 @@ function createGalleryItem(item) {
 	       const div = document.createElement('div');
 	       div.className = 'gallery-item';
 
-		       let mediaElement;
-		       let expandBtn = null;
-		       if (item.media_type === 'image') {
-			       // Create the image element
-			       mediaElement = document.createElement('img');
-			       mediaElement.src = item.url;
-			       mediaElement.alt = item.title;
-			       mediaElement.style.cursor = 'pointer';
-			       // Add click event to show modal
-			       mediaElement.addEventListener('click', () => {
-				       showModal(item);
-			       });
-		       } else if (item.media_type === 'video') {
+			       let mediaElement;
+			       let expandBtn = null;
+			       if (item.media_type === 'image') {
+				       // Create the image element
+				       mediaElement = document.createElement('img');
+				       mediaElement.src = item.url;
+				       mediaElement.alt = item.title;
+				       mediaElement.style.cursor = 'pointer';
+				       // No need to add click to image, we'll add to the box below
+			       } else if (item.media_type === 'video') {
 			       // Try to embed YouTube videos, otherwise embed video if possible
 				   if (item.url.includes('youtube.com') || item.url.includes('youtu.be')) {
 				       // Extract YouTube video ID
@@ -183,10 +180,19 @@ function createGalleryItem(item) {
 	       titleDateRow.appendChild(title);
 	       titleDateRow.appendChild(date);
 
-		div.appendChild(mediaElement);
-		div.appendChild(titleDateRow);
-		if (expandBtn) div.appendChild(expandBtn);
-		return div;
+		       div.appendChild(mediaElement);
+		       div.appendChild(titleDateRow);
+		       if (expandBtn) div.appendChild(expandBtn);
+
+		       // Make the entire gallery-item clickable (except for expand button)
+		       div.style.cursor = 'pointer';
+		       div.addEventListener('click', function(e) {
+			       // Prevent modal if clicking the expand button or a link
+			       if (e.target === expandBtn || (e.target.tagName === 'A' && e.target.href)) return;
+			       showModal(item);
+		       });
+
+		       return div;
 }
 
 // Function to display images in the gallery
